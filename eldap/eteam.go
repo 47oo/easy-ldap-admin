@@ -44,7 +44,7 @@ func (o Option) TeamAdd(t model.TeamInfo) error {
 	if len(arr) != 0 {
 		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one from whole tree", len(arr))
 	}
-	attrs := tranformTE(model.TeamEntry{})
+	attrs := Map(t)
 	dn, err := combineDN(Team, o.LAI.TopDN, t.Name)
 	if err != nil {
 		return err
