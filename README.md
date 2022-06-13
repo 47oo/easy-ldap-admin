@@ -2,7 +2,7 @@
 
 ## How to make
 
-```
+```shell
 git pull https://github.com/47oo/easy-ldap-admin.git
 cd easy-ldap-admin
 go build
@@ -10,7 +10,7 @@ go build
 
 ## How to use
 
-```
+```shell
 ela --help
 this is a easy cmd for admin to used. For example:
 

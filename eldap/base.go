@@ -235,15 +235,15 @@ func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBaseInfo, error) {
 	return EBIArr, nil
 }
 
-func (o Option) AddEntry(DN string, Attrs []model.AttrVal) error {
+func (o Option) AddEntry(dn string, attrs Attrs) error {
 	conn, err := o.ldapConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	nar := ldap.NewAddRequest(DN, nil)
-	for _, v := range Attrs {
-		nar.Attribute(v.Attr, v.Val)
+	nar := ldap.NewAddRequest(dn, nil)
+	for k, v := range attrs {
+		nar.Attribute(k, v)
 	}
 	return conn.Add(nar)
 }
