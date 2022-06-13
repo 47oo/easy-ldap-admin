@@ -108,6 +108,25 @@ func (o Option) TypeIs(DN string) (*model.EntryBaseInfo, error) {
 	}
 	return &EBI, nil
 }
+
+/**
+* SuperDN like dc=ldap,dc=org  Name like cn,ou,uid,This will return
+* Return Example: cn=<Name>,dc=ldap,dc=org
+ */
+func combineDN(Kind int, SuperDN string, Name string) (string, error) {
+	if Kind == Team {
+		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[Team], Name), nil
+	}
+	if Kind == Group {
+		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[Group], Name), nil
+	}
+	if Kind == User {
+		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[User], Name), nil
+	}
+	return "", fmt.Errorf("Unknon Kind Number %d", Kind)
+}
+
+// only support one attr
 func (o Option) SearchAllEntryDNByAttr(Kind int, Attr string, Val string) ([]string, error) {
 	conn, err := o.ldapConn()
 	if err != nil {
@@ -216,6 +235,19 @@ func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBaseInfo, error) {
 	return EBIArr, nil
 }
 
+func (o Option) AddEntry(DN string, Attrs []model.AttrVal) error {
+	conn, err := o.ldapConn()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	nar := ldap.NewAddRequest(DN, nil)
+	for _, v := range Attrs {
+		nar.Attribute(v.Attr, v.Val)
+	}
+	return conn.Add(nar)
+}
+
 /*
 * Only support User Group Team
  */
@@ -247,6 +279,7 @@ func (o Option) AddEntryBYKindDN(SuperDN string, EI model.EntryInfo) error {
 		nar.Attribute("gidNumber", []string{EI.UI.GidNumber}) // This is primary group
 		nar.Attribute("homeDirectory", []string{EI.UI.HomeDirectory})
 		nar.Attribute("userPassword", []string{EI.UI.UserPassword})
+		nar.Attribute("loginShell", []string{EI.UI.LoginShell})
 	} else {
 		return fmt.Errorf("unknow kind: %d", EI.Kind)
 	}

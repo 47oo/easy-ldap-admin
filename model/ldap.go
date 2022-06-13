@@ -65,3 +65,29 @@ type AttrVal struct {
 	Val    []string
 	AttrOP int
 }
+
+type TeamEntry struct {
+	Name             []string `eldap:"ou"`
+	Description      []string `eldap:"description"`
+	ObjectClass      []string `eldap:"objectClass"`
+	AssociatedDomain []string `eldap:"associatedDomain"`
+}
+
+type GroupEntry struct {
+	Name        []string `eldap:"cn"`
+	GidNumber   []string `eldap:"gidNumber"`
+	Description []string `eldap:"description"`
+	MemberUid   []string `eldap:"memberUid"`
+	ObjectClass []string `eldap:"objectClass"`
+}
+
+type UserEntry struct {
+	Name          []string `eldap:"uid"`
+	ObjectClass   []string `eldap:"objectClass"`
+	LoginShell    []string `eldap:"loginShell"`
+	GidNumber     []string `eldap:"gidNumber"`
+	UidNumber     []string `eldap:"uidNumber"`
+	HomeDirectory []string `eldap:"homeDirectory"`
+	UserPassword  []string `eldap:"userPassword"`
+	CN            []string `eldap:"cn"`
+}

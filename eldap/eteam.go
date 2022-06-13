@@ -27,16 +27,29 @@ import (
 /*
 	Add a new team by team name
 */
-func (o Option) TeamAdd(TI model.TeamInfo) error {
-	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", TI.Name)
+func tranformTE(t model.TeamEntry) []model.AttrVal {
+	tmpmap := Map(t)
+	Attrs := []model.AttrVal{}
+	for k, v := range tmpmap {
+		Attrs = append(Attrs, model.AttrVal{Attr: k, Val: v})
+	}
+	return Attrs
+}
+
+func (o Option) TeamAdd(t model.TeamInfo) error {
+	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", t.Name)
 	if err != nil {
 		return err
 	}
 	if len(arr) != 0 {
 		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one from whole tree", len(arr))
 	}
-
-	return o.AddEntryBYKindDN(o.LAI.TopDN, model.EntryInfo{Kind: Team, TI: model.TeamInfo{Name: TI.Name, Description: TI.Description}})
+	attrs := tranformTE(model.TeamEntry{})
+	dn, err := combineDN(Team, o.LAI.TopDN, t.Name)
+	if err != nil {
+		return err
+	}
+	return o.AddEntry(dn, attrs)
 }
 
 /**
@@ -70,4 +83,8 @@ func (o Option) TeamDelete(TeamName string) error {
 	}
 	DN := arr[0]
 	return o.DeleteEntry(DN)
+}
+
+func CreateNewTeamEntry() model.TeamEntry {
+	return model.TeamEntry{ObjectClass: defaultLdapOC[Team]}
 }

@@ -15,8 +15,11 @@ limitations under the License.
 */
 package main
 
-import "ela/cmd"
+import (
+	"ela/cmd"
+)
 
 func main() {
+
 	cmd.Execute()
 }
