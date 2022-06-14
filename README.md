@@ -1,4 +1,4 @@
-# Easy LDAP Admin
+![easy-ldap-admin](https://socialify.git.ci/47oo/easy-ldap-admin/image?description=1&font=KoHo&language=1&name=1&pattern=Floating%20Cogs&theme=Light)
 
 ## How to make
 
@@ -44,4 +44,3 @@ Flags:
 
 Use "ela [command] --help" for more information about a command.
 ```
-
