@@ -8,7 +8,7 @@ import (
 )
 
 func TestMap(t *testing.T) {
-	tests := []map[string][]string{
+	tests := []eldap.Attrs{
 		{
 			"ou":               []string{"47oo"},
 			"associatedDomain": []string{"dc=nudt,dc=org"},
