@@ -115,15 +115,15 @@ func (o Option) TypeIs(DN string) (*model.EntryBaseInfo, error) {
  */
 func combineDN(Kind int, SuperDN string, Name string) (string, error) {
 	if Kind == Team {
-		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[Team], Name), nil
+		return fmt.Sprintf("%s=%s,%s", defaultNameAttr[Team], Name, SuperDN), nil
 	}
 	if Kind == Group {
-		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[Group], Name), nil
+		return fmt.Sprintf("%s=%s,%s", defaultNameAttr[Group], Name, SuperDN), nil
 	}
 	if Kind == User {
-		return fmt.Sprintf("%s,%s=%s", SuperDN, defaultNameAttr[User], Name), nil
+		return fmt.Sprintf("%s=%s,%s", defaultNameAttr[User], Name, SuperDN), nil
 	}
-	return "", fmt.Errorf("Unknon Kind Number %d", Kind)
+	return "", fmt.Errorf("unknon kind number %d", Kind)
 }
 
 // only support one attr

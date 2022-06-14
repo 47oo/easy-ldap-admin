@@ -23,21 +23,23 @@ import (
 /**
 * Add A new group, like linux cmd groupadd
  */
-func (o Option) GroupAdd(GI model.GroupInfo) error {
-	SuperDN := ""
-	if GI.TeamName == "" {
-		SuperDN = o.LAI.TopDN
+func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
+	dn := ""
+	if teamName == "" {
+		dn, _ = combineDN(Group, o.LAI.TopDN, g.Name[0])
+
 	} else {
-		arr, err := o.SearchAllEntryDNByAttr(Team, "ou", GI.TeamName)
+		arr, err := o.SearchAllEntryDNByAttr(Team, "ou", teamName)
 		if err != nil {
 			return err
 		}
 		if len(arr) != 1 {
-			return fmt.Errorf("bad dn number %d", len(arr))
+			return fmt.Errorf("[FAIL] %d num of this team", len(arr))
 		}
-		SuperDN = arr[0]
+		dn, _ = combineDN(Group, arr[0], g.Name[0])
 	}
-	return o.AddEntryBYKindDN(SuperDN, model.EntryInfo{Kind: Group, GI: GI})
+	return o.AddEntry(dn, Map(g))
+
 }
 
 /**
@@ -76,8 +78,8 @@ func (o Option) GroupMems(GroupName string, Memes []string, AttrOP int) error {
 /**
 * like groupmod
  */
-func (o Option) GroupMod(GroupName string, GidNumber string) error {
-	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", GroupName)
+func (o Option) GroupMod(groupName string, gidNumber string) error {
+	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", groupName)
 	if err != nil {
 		return err
 	}
@@ -86,6 +88,12 @@ func (o Option) GroupMod(GroupName string, GidNumber string) error {
 	}
 	DN := arr[0]
 	return o.ModifyEntryAttr(DN, []model.AttrVal{
-		{AttrOP: Rep, Attr: "gidNumber", Val: []string{GidNumber}},
+		{AttrOP: Rep, Attr: "gidNumber", Val: []string{gidNumber}},
 	})
+}
+
+func NewGroupEntry() model.GroupEntry {
+	return model.GroupEntry{
+		ObjectClass: defaultLdapOC[Group],
+	}
 }

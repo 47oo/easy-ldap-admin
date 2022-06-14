@@ -17,21 +17,20 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var teamaddInfo = model.TeamInfo{}
+var teamaddName string
+var teamaddDesc string
 
 func teamaddRun() {
 	o := eldap.NewOption()
-	if teamaddInfo.Name == "" {
-		log.Fatalln("TeamName Must exist")
-		return
-	}
-	if err := o.TeamAdd(teamaddInfo); err != nil {
+	t := eldap.NewTeamEntry()
+	t.Name = append(t.Name, teamaddName)
+	t.Description = append(t.Description, teamaddDesc)
+	if err := o.TeamAdd(t); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -52,8 +51,8 @@ ela teamadd -n <teamname> [-d <descprition>]`,
 func init() {
 	rootCmd.AddCommand(teamaddCmd)
 
-	teamaddCmd.Flags().StringVarP(&teamaddInfo.Name, "name", "n", "", "Team Name you create")
-	teamaddCmd.Flags().StringVarP(&teamaddInfo.Description, "desc", "d", "no_desc", "Team Description")
+	teamaddCmd.Flags().StringVarP(&teamaddName, "name", "n", "", "Team Name you create")
+	teamaddCmd.Flags().StringVarP(&teamaddDesc, "desc", "d", "no_desc", "Team Description")
 	teamaddCmd.MarkFlagRequired("name")
 
 }

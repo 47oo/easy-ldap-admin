@@ -17,18 +17,24 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var groupaddInfo = model.GroupInfo{}
+var groupaddName string
+var groupaddGidNumber string
+var groupaddDesc string
+var groupaddTeamName string
 
 func groupaddRun() {
 
 	o := eldap.NewOption()
-	if err := o.GroupAdd(groupaddInfo); err != nil {
+	g := eldap.NewGroupEntry()
+	g.Name = append(g.Name, groupaddName)
+	g.Description = append(g.Description, groupaddDesc)
+	g.GidNumber = append(g.GidNumber, groupaddGidNumber)
+	if err := o.GroupAdd(groupaddTeamName, g); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -47,10 +53,10 @@ var groupaddCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(groupaddCmd)
-	groupaddCmd.Flags().StringVarP(&groupaddInfo.GidNumber, "gid", "g", "", "use GID for the new group")
-	groupaddCmd.Flags().StringVarP(&groupaddInfo.Name, "name", "n", "", "Group Name")
-	groupaddCmd.Flags().StringVarP(&groupaddInfo.Description, "desc", "d", "no_desc", "Group Description")
-	groupaddCmd.Flags().StringVarP(&groupaddInfo.TeamName, "teamname", "t", "", "You want the group in which team, or default team")
+	groupaddCmd.Flags().StringVarP(&groupaddGidNumber, "gid", "g", "", "use GID for the new group")
+	groupaddCmd.Flags().StringVarP(&groupaddName, "name", "n", "", "Group Name")
+	groupaddCmd.Flags().StringVarP(&groupaddDesc, "desc", "d", "no_desc", "Group Description")
+	groupaddCmd.Flags().StringVarP(&groupaddTeamName, "teamname", "t", "", "You want the group in which team, or default team")
 	groupaddCmd.MarkFlagRequired("name")
 	groupaddCmd.MarkFlagRequired("gid")
 

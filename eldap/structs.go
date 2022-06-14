@@ -38,6 +38,9 @@ func Map(s interface{}) Attrs {
 		if len(val) == 0 {
 			continue
 		}
+		if val[0] == "" {
+			continue
+		}
 		mapv[key] = val
 	}
 	return mapv

@@ -20,43 +20,28 @@ import (
 	"fmt"
 )
 
-// func (o Option) combinationDN(Name string, SuperDN string) string {
-// 	return fmt.Sprintf("%s,%s", Name, SuperDN)
-// }
-
 /*
-	Add a new team by team name
-*/
-func tranformTE(t model.TeamEntry) []model.AttrVal {
-	tmpmap := Map(t)
-	Attrs := []model.AttrVal{}
-	for k, v := range tmpmap {
-		Attrs = append(Attrs, model.AttrVal{Attr: k, Val: v})
-	}
-	return Attrs
-}
-
-func (o Option) TeamAdd(t model.TeamInfo) error {
-	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", t.Name)
+*	Add a new team by team name
+ */
+func (o Option) TeamAdd(t model.TeamEntry) error {
+	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", t.Name[0])
 	if err != nil {
 		return err
 	}
 	if len(arr) != 0 {
 		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one from whole tree", len(arr))
 	}
+	t.AssociatedDomain = append(t.AssociatedDomain, o.LAI.TopDN)
 	attrs := Map(t)
-	dn, err := combineDN(Team, o.LAI.TopDN, t.Name)
-	if err != nil {
-		return err
-	}
+	dn, _ := combineDN(Team, o.LAI.TopDN, t.Name[0])
 	return o.AddEntry(dn, attrs)
 }
 
 /**
 *  Update team desc
  */
-func (o Option) TeamDescUpdate(TI model.TeamInfo) error {
-	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", TI.Name)
+func (o Option) TeamDescUpdate(t model.TeamEntry) error {
+	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", t.Name[0])
 	if err != nil {
 		return err
 	}
@@ -65,7 +50,7 @@ func (o Option) TeamDescUpdate(TI model.TeamInfo) error {
 	}
 	DN := arr[0]
 	return o.ModifyEntryAttr(DN, []model.AttrVal{
-		{Attr: "description", Val: []string{TI.Description}, AttrOP: Rep},
+		{Attr: "description", Val: t.Description, AttrOP: Rep},
 	})
 }
 
@@ -85,6 +70,6 @@ func (o Option) TeamDelete(TeamName string) error {
 	return o.DeleteEntry(DN)
 }
 
-func CreateNewTeamEntry() model.TeamEntry {
+func NewTeamEntry() model.TeamEntry {
 	return model.TeamEntry{ObjectClass: defaultLdapOC[Team]}
 }

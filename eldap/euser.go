@@ -20,28 +20,24 @@ import (
 	"fmt"
 )
 
-var UserKVMap = map[string]string{
-	"home": "homeDirectory",
-}
-
 /**
 * like cmd useradd
  */
-func (o Option) UserAdd(UI model.UserInfo) error {
-	SuperDN := ""
-	if UI.TeamName == "" {
-		SuperDN = o.LAI.TopDN
+func (o Option) UserAdd(teamName string, u model.UserEntry) error {
+	dn := ""
+	if teamName == "" {
+		dn, _ = combineDN(User, o.LAI.TopDN, u.Name[0])
 	} else {
-		arr, err := o.SearchAllEntryDNByAttr(Team, "ou", UI.TeamName)
+		arr, err := o.SearchAllEntryDNByAttr(Team, "ou", teamName)
 		if err != nil {
 			return err
 		}
 		if len(arr) != 1 {
 			return fmt.Errorf("bad dn number %d", len(arr))
 		}
-		SuperDN = arr[0]
+		dn, _ = combineDN(User, arr[0], u.Name[0])
 	}
-	return o.AddEntryBYKindDN(SuperDN, model.EntryInfo{Kind: User, UI: UI})
+	return o.AddEntry(dn, Map(u))
 }
 
 /**
@@ -55,6 +51,30 @@ func (o Option) UserDel(UserName string) error {
 	if len(arr) != 1 {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
-	DN := arr[0]
-	return o.DeleteEntry(DN)
+	dn := arr[0]
+	return o.DeleteEntry(dn)
+}
+
+func (o Option) UserMod(u model.UserEntry) error {
+	arr, err := o.SearchAllEntryDNByAttr(User, "uid", u.Name[0])
+	if err != nil {
+		return err
+	}
+	if len(arr) != 1 {
+		return fmt.Errorf("bad dn number %d", len(arr))
+	}
+	dn := arr[0]
+	um := Map(u)
+	delete(um, "uid")
+	attrs := []model.AttrVal{}
+	for k, v := range um {
+		attrs = append(attrs, model.AttrVal{Attr: k, Val: v, AttrOP: Rep})
+	}
+	return o.ModifyEntryAttr(dn, attrs)
+}
+
+func NewUserEntry() model.UserEntry {
+	return model.UserEntry{
+		ObjectClass: defaultLdapOC[User],
+	}
 }

@@ -22,25 +22,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var groupname string
-var addusername string
-var delusername string
-var groupmemslist bool
+var groupmemsName string
+var addUserName string
+var delUserName string
+var groupmemsList bool
 
 func groupmemsRun() {
 	o := eldap.NewOption()
-	if groupmemslist {
+	if groupmemsList {
 		log.Fatalln("not support now")
 		return
 	}
-	if addusername != "" {
-		if err := o.GroupMems(groupname, []string{addusername}, eldap.Add); err != nil {
+	if addUserName != "" {
+		if err := o.GroupMems(groupmemsName, []string{addUserName}, eldap.Add); err != nil {
 			log.Fatalln(err)
 			return
 		}
 	}
-	if delusername != "" {
-		if err := o.GroupMems(groupname, []string{delusername}, eldap.Del); err != nil {
+	if delUserName != "" {
+		if err := o.GroupMems(groupmemsName, []string{delUserName}, eldap.Del); err != nil {
 			log.Fatalln(err)
 			return
 		}
@@ -61,10 +61,10 @@ var groupmemsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(groupmemsCmd)
-	groupmemsCmd.Flags().StringVarP(&groupname, "group", "g", "", "change groupname instead of the user's group")
-	groupmemsCmd.Flags().StringVarP(&addusername, "add", "a", "", "add username to the members of the group")
-	groupmemsCmd.Flags().StringVarP(&delusername, "delete", "d", "", "add username to the members of the group")
-	groupmemsCmd.Flags().BoolVarP(&groupmemslist, "list", "l", false, "list the members of the group")
+	groupmemsCmd.Flags().StringVarP(&groupmemsName, "group", "g", "", "change groupname instead of the user's group")
+	groupmemsCmd.Flags().StringVarP(&addUserName, "add", "a", "", "add username to the members of the group")
+	groupmemsCmd.Flags().StringVarP(&delUserName, "delete", "d", "", "add username to the members of the group")
+	groupmemsCmd.Flags().BoolVarP(&groupmemsList, "list", "l", false, "list the members of the group")
 
 	groupmemsCmd.MarkFlagRequired("group")
 

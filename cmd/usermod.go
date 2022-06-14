@@ -16,21 +16,39 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"ela/eldap"
+	"log"
 
 	"github.com/spf13/cobra"
 )
 
+var usermodHome string
+var usermodName string
+var usermodPassword string
+var usermodShell string
+var usermodUidNumber string
+var usermodGidNumber string
+
 func usermodRun() {
-	// o := eldap.NewOption()
-	fmt.Println("not support now")
+	o := eldap.NewOption()
+	u := eldap.NewUserEntry()
+	u.Name = append(u.Name, usermodName)
+	u.LoginShell = append(u.LoginShell, usermodShell)
+	u.GidNumber = append(u.GidNumber, usermodGidNumber)
+	u.HomeDirectory = append(u.HomeDirectory, usermodHome)
+	u.UserPassword = append(u.UserPassword, usermodPassword)
+	u.UidNumber = append(u.UidNumber, usermodUidNumber)
+	if err := o.UserMod(u); err != nil {
+		log.Fatalln(err)
+	}
+
 }
 
 // usermodCmd represents the usermod command
 var usermodCmd = &cobra.Command{
 	Use:   "usermod",
-	Short: "not support now",
-	Long:  `not support now`,
+	Short: "modify a user account",
+	Long:  `he usermod command modifies the ldap to reflect the changes that are specified on the command line`,
 	Run: func(cmd *cobra.Command, args []string) {
 		usermodRun()
 	},
@@ -38,5 +56,11 @@ var usermodCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(usermodCmd)
-
+	usermodCmd.Flags().StringVarP(&usermodHome, "home", "d", "", "new home directory for the user account")
+	usermodCmd.Flags().StringVarP(&usermodName, "name", "n", "", "which account you want to change")
+	usermodCmd.Flags().StringVarP(&usermodPassword, "password", "p", "", "use encrypted password for the new password")
+	usermodCmd.Flags().StringVarP(&usermodShell, "shell", "s", "", "new login shell for the user account")
+	usermodCmd.Flags().StringVarP(&usermodUidNumber, "uid", "u", "", "new UID for the user account")
+	usermodCmd.Flags().StringVarP(&usermodGidNumber, "gid", "g", "", "force use GID as new primary group")
+	usermodCmd.MarkFlagRequired("name")
 }

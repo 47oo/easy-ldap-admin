@@ -16,33 +16,41 @@ limitations under the License.
 package cmd
 
 import (
-	"ela/model"
-	"fmt"
+	"ela/eldap"
+	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var groupmodInfo = model.GroupInfo{}
+var groupmodName string
+var groupmodGidNumber string
+var groupmodDesc string
+
+func groupmodRun() {
+	o := eldap.NewOption()
+	if groupaddGidNumber != "" {
+		if err := o.GroupMod(groupmodName, groupmodGidNumber); err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+}
 
 // groupmodCmd represents the groupmod command
 var groupmodCmd = &cobra.Command{
 	Use:   "groupmod",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "modify a group definition on the system",
+	Long:  `The groupmod command modifies the definition of the specified GROUP by modifying the appropriate entry in the group database.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("groupmod called")
+		groupmodRun()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(groupmodCmd)
-	groupmodCmd.Flags().StringVarP(&groupmodInfo.Name, "name", "n", "", "groupname")
-	groupmodCmd.Flags().StringVarP(&groupmodInfo.Description, "desc", "d", "", "Descroption")
+	groupmodCmd.Flags().StringVarP(&groupmodName, "name", "n", "", "groupname")
+	groupmodCmd.Flags().StringVarP(&groupmodGidNumber, "gid", "g", "", "change the group ID to GID")
+	groupmodCmd.Flags().StringVarP(&groupmodDesc, "desc", "d", "", "Descroption Not support now")
 	groupmodCmd.MarkFlagRequired("name")
-	groupmodCmd.MarkFlagRequired("desc")
+
 }

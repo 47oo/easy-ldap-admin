@@ -17,17 +17,41 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var useraddInfo = model.UserInfo{}
+var useraddName string
+var useraddHomeDirectory string
+var useraddGidNumber string
+var useraddUidNumber string
+var useraddUserPassword string
+var useraddLoginShell string
+var useraddTeamName string
 
 func useraddRun() {
+	if useraddHomeDirectory == "" {
+		useraddHomeDirectory = fmt.Sprintf(`/%s/%s`, "home", useraddName)
+	}
+	if useraddUserPassword == "" {
+		useraddUserPassword = useraddName
+	}
+	if useraddLoginShell == "" {
+		useraddLoginShell = "/bin/bash"
+	}
 	o := eldap.NewOption()
-	if err := o.UserAdd(useraddInfo); err != nil {
+	u := eldap.NewUserEntry()
+	u.CN = append(u.CN, useraddName)
+	u.Name = append(u.Name, useraddName)
+	u.GidNumber = append(u.GidNumber, useraddGidNumber)
+	u.UidNumber = append(u.UidNumber, useraddUidNumber)
+	u.HomeDirectory = append(u.HomeDirectory, useraddHomeDirectory)
+	u.LoginShell = append(u.LoginShell, useraddLoginShell)
+	u.UserPassword = append(u.UserPassword, useraddUserPassword)
+
+	if err := o.UserAdd(useraddTeamName, u); err != nil {
 		log.Fatalln(err)
 	}
 }
@@ -45,18 +69,16 @@ var useraddCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(useraddCmd)
-	useraddCmd.Flags().StringVarP(&useraddInfo.Name, "name", "n", "", "username")
-	useraddCmd.Flags().StringVarP(&useraddInfo.HomeDirectory, "home-dir", "d", "", "user home dir")
-	useraddCmd.Flags().StringVarP(&useraddInfo.GidNumber, "gid", "g", "", "group number")
-	useraddCmd.Flags().StringVarP(&useraddInfo.UidNumber, "uid", "u", "", "user uid number")
-	useraddCmd.Flags().StringVarP(&useraddInfo.UserPassword, "password", "p", "", "encrypted password of the new account")
-	useraddCmd.Flags().StringVarP(&useraddInfo.LoginShell, "shell", "s", "", "login shell of the new account")
-	useraddCmd.Flags().StringVarP(&useraddInfo.TeamName, "team", "t", "", "teamname for this user")
+	useraddCmd.Flags().StringVarP(&useraddName, "name", "n", "", "username")
+	useraddCmd.Flags().StringVarP(&useraddHomeDirectory, "home-dir", "d", "", "user home dir")
+	useraddCmd.Flags().StringVarP(&useraddGidNumber, "gid", "g", "", "group number")
+	useraddCmd.Flags().StringVarP(&useraddUidNumber, "uid", "u", "", "user uid number")
+	useraddCmd.Flags().StringVarP(&useraddUserPassword, "password", "p", "", "encrypted password of the new account")
+	useraddCmd.Flags().StringVarP(&useraddLoginShell, "shell", "s", "", "login shell of the new account")
+	useraddCmd.Flags().StringVarP(&useraddTeamName, "team", "t", "", "teamname for this user")
 
 	useraddCmd.MarkFlagRequired("name")
-	useraddCmd.MarkFlagRequired("home-dir")
 	useraddCmd.MarkFlagRequired("gid")
 	useraddCmd.MarkFlagRequired("uid")
-	useraddCmd.MarkFlagRequired("password")
-	useraddCmd.MarkFlagRequired("shell")
+
 }

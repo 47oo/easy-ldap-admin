@@ -15,7 +15,7 @@ func TestMap(t *testing.T) {
 			"objectClass":      []string{"top", "organizationalUnit", "domainRelatedObject"},
 		},
 	}
-	nt := eldap.CreateNewTeamEntry()
+	nt := eldap.NewTeamEntry()
 	nt.Name = append(nt.Name, "47oo")
 	nt.AssociatedDomain = append(nt.AssociatedDomain, "dc=nudt,dc=org")
 	mapnt := eldap.Map(nt)
