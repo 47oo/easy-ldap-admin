@@ -35,7 +35,7 @@ Available Commands:
   teammod     modify a team
   useradd     create a new user or update default new user information
   userdel     delete a user account and related files
-  usermod     not support now
+  usermod     modify user account
 
 Flags:
       --config string   config file (default is $HOME/.ela.ini)
@@ -44,3 +44,4 @@ Flags:
 
 Use "ela [command] --help" for more information about a command.
 ```
+
