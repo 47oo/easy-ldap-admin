@@ -25,14 +25,10 @@ import (
 var groupmemsName string
 var addUserName string
 var delUserName string
-var groupmemsList bool
 
 func groupmemsRun() {
 	o := eldap.NewOption()
-	if groupmemsList {
-		log.Fatalln("not support now")
-		return
-	}
+
 	if addUserName != "" {
 		if err := o.GroupMems(groupmemsName, []string{addUserName}, eldap.Add); err != nil {
 			log.Fatalln(err)
@@ -64,8 +60,5 @@ func init() {
 	groupmemsCmd.Flags().StringVarP(&groupmemsName, "group", "g", "", "change groupname instead of the user's group")
 	groupmemsCmd.Flags().StringVarP(&addUserName, "add", "a", "", "add username to the members of the group")
 	groupmemsCmd.Flags().StringVarP(&delUserName, "delete", "d", "", "add username to the members of the group")
-	groupmemsCmd.Flags().BoolVarP(&groupmemsList, "list", "l", false, "list the members of the group")
-
 	groupmemsCmd.MarkFlagRequired("group")
-
 }

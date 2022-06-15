@@ -38,7 +38,11 @@ func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
 		}
 		dn, _ = combineDN(Group, arr[0], g.Name[0])
 	}
-	return o.AddEntry(dn, Map(g))
+	attrs, err := Map(g)
+	if err != nil {
+		return err
+	}
+	return o.AddEntry(dn, attrs)
 
 }
 
@@ -86,8 +90,8 @@ func (o Option) GroupMod(groupName string, gidNumber string) error {
 	if len(arr) != 1 {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
-	DN := arr[0]
-	return o.ModifyEntryAttr(DN, []model.AttrVal{
+	dn := arr[0]
+	return o.ModifyEntryAttr(dn, []model.AttrVal{
 		{AttrOP: Rep, Attr: "gidNumber", Val: []string{gidNumber}},
 	})
 }

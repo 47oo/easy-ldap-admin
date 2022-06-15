@@ -37,7 +37,11 @@ func (o Option) UserAdd(teamName string, u model.UserEntry) error {
 		}
 		dn, _ = combineDN(User, arr[0], u.Name[0])
 	}
-	return o.AddEntry(dn, Map(u))
+	attrs, err := Map(u)
+	if err != nil {
+		return err
+	}
+	return o.AddEntry(dn, attrs)
 }
 
 /**
@@ -64,7 +68,10 @@ func (o Option) UserMod(u model.UserEntry) error {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
 	dn := arr[0]
-	um := Map(u)
+	um, err := Map(u)
+	if err != nil {
+		return err
+	}
 	delete(um, "uid")
 	attrs := []model.AttrVal{}
 	for k, v := range um {

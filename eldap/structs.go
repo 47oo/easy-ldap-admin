@@ -17,15 +17,15 @@ limitations under the License.
 package eldap
 
 import (
+	"ela/model"
+	"fmt"
 	"reflect"
 )
-
-type Attrs map[string][]string
 
 /**
 * Only Used For eldap
  */
-func Map(s interface{}) Attrs {
+func Map(s interface{}) (model.Attrs, error) {
 	rt := reflect.TypeOf(s)
 	rv := reflect.ValueOf(s)
 	mapv := map[string][]string{}
@@ -43,5 +43,8 @@ func Map(s interface{}) Attrs {
 		}
 		mapv[key] = val
 	}
-	return mapv
+	if len(mapv) == 0 {
+		return nil, fmt.Errorf("no attr in Attrs")
+	}
+	return mapv, nil
 }

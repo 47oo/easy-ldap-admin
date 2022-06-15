@@ -22,13 +22,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var teammodName string
 var teammodDesc string
 
-func teammodRun() {
+func teammodRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
 	t := eldap.NewTeamEntry()
-	t.Name = append(t.Name, teammodName)
+	t.Name = args
 	t.Description = append(t.Description, teammodDesc)
 	if err := o.TeamDescUpdate(t); err != nil {
 		log.Fatalln(err)
@@ -37,19 +36,17 @@ func teammodRun() {
 
 // teammodCmd represents the teammod command
 var teammodCmd = &cobra.Command{
-	Use:   "teammod",
+	Use:   "teammod [flags] TEAM",
 	Short: "modify a team",
-	Long:  `modify a team,only support modify desc`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		teammodRun()
+		teammodRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(teammodCmd)
-	teammodCmd.Flags().StringVarP(&teammodName, "name", "n", "", "Team Name")
 	teammodCmd.Flags().StringVarP(&teammodDesc, "desc", "d", "", "Team Description")
-	teammodCmd.MarkFlagRequired("name")
 	teammodCmd.MarkFlagRequired("desc")
 
 }

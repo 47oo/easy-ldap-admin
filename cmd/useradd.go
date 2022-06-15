@@ -23,7 +23,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var useraddName string
 var useraddHomeDirectory string
 var useraddGidNumber string
 var useraddUidNumber string
@@ -31,20 +30,20 @@ var useraddUserPassword string
 var useraddLoginShell string
 var useraddTeamName string
 
-func useraddRun() {
+func useraddRun(cmd *cobra.Command, args []string) {
 	if useraddHomeDirectory == "" {
-		useraddHomeDirectory = fmt.Sprintf(`/%s/%s`, "home", useraddName)
+		useraddHomeDirectory = fmt.Sprintf(`/%s/%s`, "home", args[0])
 	}
 	if useraddUserPassword == "" {
-		useraddUserPassword = useraddName
+		useraddUserPassword = args[0]
 	}
 	if useraddLoginShell == "" {
 		useraddLoginShell = "/bin/bash"
 	}
 	o := eldap.NewOption()
 	u := eldap.NewUserEntry()
-	u.CN = append(u.CN, useraddName)
-	u.Name = append(u.Name, useraddName)
+	u.CN = args
+	u.Name = args
 	u.GidNumber = append(u.GidNumber, useraddGidNumber)
 	u.UidNumber = append(u.UidNumber, useraddUidNumber)
 	u.HomeDirectory = append(u.HomeDirectory, useraddHomeDirectory)
@@ -58,18 +57,16 @@ func useraddRun() {
 
 // useraddCmd represents the useradd command
 var useraddCmd = &cobra.Command{
-	Use:   "useradd",
+	Use:   "useradd [flags] LOGIN",
 	Short: "create a new user or update default new user information",
-	Long: `the useradd command creates a new user account using the values specified on the command
-	line plus the default values from the ldap`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		useraddRun()
+		useraddRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(useraddCmd)
-	useraddCmd.Flags().StringVarP(&useraddName, "name", "n", "", "username")
 	useraddCmd.Flags().StringVarP(&useraddHomeDirectory, "home-dir", "d", "", "user home dir")
 	useraddCmd.Flags().StringVarP(&useraddGidNumber, "gid", "g", "", "group number")
 	useraddCmd.Flags().StringVarP(&useraddUidNumber, "uid", "u", "", "user uid number")
@@ -77,7 +74,6 @@ func init() {
 	useraddCmd.Flags().StringVarP(&useraddLoginShell, "shell", "s", "", "login shell of the new account")
 	useraddCmd.Flags().StringVarP(&useraddTeamName, "team", "t", "", "teamname for this user")
 
-	useraddCmd.MarkFlagRequired("name")
 	useraddCmd.MarkFlagRequired("gid")
 	useraddCmd.MarkFlagRequired("uid")
 
