@@ -39,11 +39,7 @@ func initRun() {
 	fmt.Printf("Please enter ldap Admin account: ")
 	fmt.Scanln(&lai.Admin)
 	pd, _ := gopass.GetPasswdPrompt(`Please enter ldap admin passwd(enter "NO" to not write password): `, true, os.Stdin, os.Stdout)
-	asepd, err := secret.EncryptAES([]byte(pd), secret.KEY)
-	if err != nil {
-		log.Fatalln(err)
-		return
-	}
+	asepd := secret.EasyEncrypt([]byte(pd), secret.KEY)
 
 	lai.AdminPW = string(asepd)
 	homedir, _ := os.UserHomeDir()
@@ -55,7 +51,7 @@ func initRun() {
 	dS.NewKey("Admin", lai.Admin)
 	dS.NewKey("AdminPW", lai.AdminPW)
 	dS.NewKey("TopDN", lai.TopDN)
-	if err = cfg.SaveTo(filename); err != nil {
+	if err := cfg.SaveTo(filename); err != nil {
 		log.Fatalln(err)
 	}
 

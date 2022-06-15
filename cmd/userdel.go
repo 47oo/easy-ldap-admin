@@ -17,34 +17,28 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var userdelInfo = model.UserInfo{}
-
-func userdelRun() {
+func userdelRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
-	if err := o.UserDel(userdelInfo.Name); err != nil {
+	if err := o.UserDel(args[0]); err != nil {
 		log.Fatalln(err)
 	}
 }
 
 // userdelCmd represents the userdel command
 var userdelCmd = &cobra.Command{
-	Use:   "userdel",
+	Use:   "userdel [flags] LOGIN",
 	Short: "delete a user account and related files",
-	Long:  `The userdel command modifies ldap server data,  The named user must exist.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		userdelRun()
+		userdelRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(userdelCmd)
-	userdelCmd.Flags().StringVarP(&userdelInfo.Name, "name", "n", "", "username you want to delete")
-	userdelCmd.MarkFlagRequired("name")
-
 }

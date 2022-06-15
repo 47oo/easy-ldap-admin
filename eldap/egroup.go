@@ -38,7 +38,11 @@ func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
 		}
 		dn, _ = combineDN(Group, arr[0], g.Name[0])
 	}
-	return o.AddEntry(dn, Map(g))
+	attrs, err := Map(g)
+	if err != nil {
+		return err
+	}
+	return o.AddEntry(dn, attrs)
 
 }
 
@@ -46,8 +50,8 @@ func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
 * like cmd groupdel
  */
 
-func (o Option) GroupDel(GroupName string) error {
-	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", GroupName)
+func (o Option) GroupDel(groupName string) error {
+	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", groupName)
 	if err != nil {
 		return err
 	}
@@ -61,17 +65,17 @@ func (o Option) GroupDel(GroupName string) error {
 * like groupmems ,Add mem or del mem
  */
 
-func (o Option) GroupMems(GroupName string, Memes []string, AttrOP int) error {
-	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", GroupName)
+func (o Option) GroupMems(groupName string, mems []string, attrOP int) error {
+	arr, err := o.SearchAllEntryDNByAttr(Group, "cn", groupName)
 	if err != nil {
 		return err
 	}
 	if len(arr) != 1 {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
-	DN := arr[0]
-	return o.ModifyEntryAttr(DN, []model.AttrVal{
-		{AttrOP: AttrOP, Attr: "memberUid", Val: Memes},
+	dn := arr[0]
+	return o.ModifyEntryAttr(dn, []model.AttrVal{
+		{AttrOP: attrOP, Attr: "memberUid", Val: mems},
 	})
 }
 
@@ -86,8 +90,8 @@ func (o Option) GroupMod(groupName string, gidNumber string) error {
 	if len(arr) != 1 {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
-	DN := arr[0]
-	return o.ModifyEntryAttr(DN, []model.AttrVal{
+	dn := arr[0]
+	return o.ModifyEntryAttr(dn, []model.AttrVal{
 		{AttrOP: Rep, Attr: "gidNumber", Val: []string{gidNumber}},
 	})
 }

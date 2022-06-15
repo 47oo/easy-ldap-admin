@@ -17,36 +17,29 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-func teamdelRun() {
+func teamdelRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
-	if teamdelInfo.Name == "" {
-		log.Fatalln("Team Name Must Exist")
-	}
-	if err := o.TeamDelete(teamdelInfo.Name); err != nil {
+
+	if err := o.TeamDelete(args[0]); err != nil {
 		log.Fatalln(err)
 	}
 }
 
 // teamdelCmd represents the teamdel command
 var teamdelCmd = &cobra.Command{
-	Use:   "teamdel",
+	Use:   "teamdel [flags] TEAM",
 	Short: "delete a user account",
-	Long:  `delete a user account`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		teamdelRun()
+		teamdelRun(cmd, args)
 	},
 }
-var teamdelInfo = model.TeamInfo{}
 
 func init() {
 	rootCmd.AddCommand(teamdelCmd)
-	teamdelCmd.Flags().StringVarP(&teamdelInfo.Name, "name", "n", "", "The team you want to del")
-	teamdelCmd.MarkFlagRequired("name")
-
 }
