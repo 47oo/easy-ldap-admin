@@ -190,14 +190,14 @@ func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBase, 
 /**
 Only return one layer entry by the domain you input
 */
-func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBase, error) {
+func (o Option) ShowBaseInfoScopeOne(dn string) ([]model.EntryBase, error) {
 
 	conn, err := o.ldapConn()
 	if err != nil {
 		return nil, err
 	}
 	defer conn.Close()
-	lnsr := ldap.NewSearchRequest(DN, ldap.ScopeSingleLevel,
+	lnsr := ldap.NewSearchRequest(dn, ldap.ScopeSingleLevel,
 		ldap.NeverDerefAliases, 0, 0, false, "(objectclass=*)", []string{"uid", "dn", "ou", "cn", "objectClass", "hasSubordinates"}, nil)
 	res, err := conn.Search(lnsr)
 	if err != nil {
@@ -248,14 +248,14 @@ func (o Option) AddEntry(dn string, attrs model.Attrs) error {
 	return conn.Add(nar)
 }
 
-func (o Option) ModifyEntryAttr(DN string, Arr []model.AttrVal) error {
+func (o Option) ModifyEntryAttr(dn string, arr []model.AttrVal) error {
 	conn, err := o.ldapConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	nmr := ldap.NewModifyRequest(DN, nil)
-	for _, v := range Arr {
+	nmr := ldap.NewModifyRequest(dn, nil)
+	for _, v := range arr {
 		if v.AttrOP == Add {
 			nmr.Add(v.Attr, v.Val)
 		} else if v.AttrOP == Del {
@@ -269,13 +269,13 @@ func (o Option) ModifyEntryAttr(DN string, Arr []model.AttrVal) error {
 	return conn.Modify(nmr)
 }
 
-func (o Option) DeleteEntry(DN string) error {
+func (o Option) DeleteEntry(dn string) error {
 	conn, err := o.ldapConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	ndr := ldap.NewDelRequest(DN, nil)
+	ndr := ldap.NewDelRequest(dn, nil)
 	return conn.Del(ndr)
 }
 

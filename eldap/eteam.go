@@ -61,16 +61,16 @@ func (o Option) TeamDescUpdate(t model.TeamEntry) error {
 * Del team and the team must has no leaf ,or delete err
  */
 
-func (o Option) TeamDelete(TeamName string) error {
-	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", TeamName)
+func (o Option) TeamDelete(teamName string) error {
+	arr, err := o.SearchAllEntryDNByAttr(Team, "ou", teamName)
 	if err != nil {
 		return err
 	}
 	if len(arr) != 1 {
 		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one", len(arr))
 	}
-	DN := arr[0]
-	return o.DeleteEntry(DN)
+	dn := arr[0]
+	return o.DeleteEntry(dn)
 }
 
 func NewTeamEntry() model.TeamEntry {

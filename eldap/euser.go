@@ -47,8 +47,8 @@ func (o Option) UserAdd(teamName string, u model.UserEntry) error {
 /**
 like cmd userdel
 */
-func (o Option) UserDel(UserName string) error {
-	arr, err := o.SearchAllEntryDNByAttr(User, "uid", UserName)
+func (o Option) UserDel(userName string) error {
+	arr, err := o.SearchAllEntryDNByAttr(User, "uid", userName)
 	if err != nil {
 		return err
 	}
