@@ -23,16 +23,15 @@ import (
 )
 
 var usermodHome string
-var usermodName string
 var usermodPassword string
 var usermodShell string
 var usermodUidNumber string
 var usermodGidNumber string
 
-func usermodRun() {
+func usermodRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
 	u := eldap.NewUserEntry()
-	u.Name = append(u.Name, usermodName)
+	u.Name = args
 	u.LoginShell = append(u.LoginShell, usermodShell)
 	u.GidNumber = append(u.GidNumber, usermodGidNumber)
 	u.HomeDirectory = append(u.HomeDirectory, usermodHome)
@@ -46,21 +45,18 @@ func usermodRun() {
 
 // usermodCmd represents the usermod command
 var usermodCmd = &cobra.Command{
-	Use:   "usermod",
+	Use:   "usermod [flags] LOGIN",
 	Short: "modify a user account",
-	Long:  `he usermod command modifies the ldap to reflect the changes that are specified on the command line`,
 	Run: func(cmd *cobra.Command, args []string) {
-		usermodRun()
+		usermodRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(usermodCmd)
 	usermodCmd.Flags().StringVarP(&usermodHome, "home", "d", "", "new home directory for the user account")
-	usermodCmd.Flags().StringVarP(&usermodName, "name", "n", "", "which account you want to change")
 	usermodCmd.Flags().StringVarP(&usermodPassword, "password", "p", "", "use encrypted password for the new password")
 	usermodCmd.Flags().StringVarP(&usermodShell, "shell", "s", "", "new login shell for the user account")
 	usermodCmd.Flags().StringVarP(&usermodUidNumber, "uid", "u", "", "new UID for the user account")
 	usermodCmd.Flags().StringVarP(&usermodGidNumber, "gid", "g", "", "force use GID as new primary group")
-	usermodCmd.MarkFlagRequired("name")
 }

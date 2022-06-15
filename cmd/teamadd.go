@@ -22,13 +22,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var teamaddName string
 var teamaddDesc string
 
-func teamaddRun() {
+func teamaddRun(cmd *cobra.Command, args []string) {
+
 	o := eldap.NewOption()
 	t := eldap.NewTeamEntry()
-	t.Name = append(t.Name, teamaddName)
+	t.Name = args
 	t.Description = append(t.Description, teamaddDesc)
 	if err := o.TeamAdd(t); err != nil {
 		log.Fatalln(err)
@@ -38,21 +38,16 @@ func teamaddRun() {
 
 // teamaddCmd represents the teamadd command
 var teamaddCmd = &cobra.Command{
-	Use:   "teamadd",
+	Use:   "teamadd [flags] TEAM",
 	Short: "create a new team",
-	Long: `team is an organization in ldap. For example:
-
-ela teamadd -n <teamname> [-d <descprition>]`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		teamaddRun()
+		teamaddRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(teamaddCmd)
-
-	teamaddCmd.Flags().StringVarP(&teamaddName, "name", "n", "", "Team Name you create")
-	teamaddCmd.Flags().StringVarP(&teamaddDesc, "desc", "d", "no_desc", "Team Description")
-	teamaddCmd.MarkFlagRequired("name")
+	teamaddCmd.Flags().StringVarP(&teamaddDesc, "desc", "d", "", "Team Description")
 
 }

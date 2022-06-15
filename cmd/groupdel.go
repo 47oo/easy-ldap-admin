@@ -17,34 +17,28 @@ package cmd
 
 import (
 	"ela/eldap"
-	"ela/model"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var groupdelInfo = model.GroupInfo{}
-
-func groupdelRun() {
+func groupdelRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
-	if err := o.GroupDel(groupdelInfo.Name); err != nil {
+	if err := o.GroupDel(args[0]); err != nil {
 		log.Fatalln(err)
 	}
 }
 
 // groupdelCmd represents the groupdel command
 var groupdelCmd = &cobra.Command{
-	Use:   "groupdel",
+	Use:   "groupdel [flags] GROUP",
 	Short: "groupdel - delete a group",
-	Long:  `The groupdel command modifies the system account files, deleting all entries that refer to GROUP. The named group must exist.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		groupdelRun()
+		groupdelRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(groupdelCmd)
-	groupdelCmd.Flags().StringVarP(&groupdelInfo.Name, "name", "n", "", "Group Name")
-	groupdelCmd.MarkFlagRequired("name")
-
 }

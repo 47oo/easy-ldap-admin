@@ -77,7 +77,7 @@ func (o Option) ldapConn() (*ldap.Conn, error) {
 
 }
 
-func (o Option) TypeIs(DN string) (*model.EntryBaseInfo, error) {
+func (o Option) TypeIs(DN string) (*model.EntryBase, error) {
 	conn, err := o.ldapConn()
 
 	if err != nil {
@@ -90,7 +90,7 @@ func (o Option) TypeIs(DN string) (*model.EntryBaseInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	EBI := model.EntryBaseInfo{Kind: Unknown, HasSubordinates: false}
+	EBI := model.EntryBase{Kind: Unknown, HasSubordinates: false}
 	sr.Print()
 	for _, entry := range sr.Entries {
 		for _, v := range entry.GetAttributeValues("objectClass") {
@@ -150,7 +150,7 @@ func (o Option) SearchAllEntryDNByAttr(Kind int, Attr string, Val string) ([]str
 /**
 * DN is the Base Search location,and Kind support User,Group,Team range 0-2
  */
-func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBaseInfo, error) {
+func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBase, error) {
 	conn, err := o.ldapConn()
 	if err != nil {
 		return nil, err
@@ -173,9 +173,9 @@ func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBaseIn
 		return nil, err
 	}
 	res.Print()
-	EBIArr := make([]model.EntryBaseInfo, 0)
+	EBIArr := make([]model.EntryBase, 0)
 	for _, entry := range res.Entries {
-		ebi := model.EntryBaseInfo{}
+		ebi := model.EntryBase{}
 		ebi.HasSubordinates = false
 		if entry.GetAttributeValue("hasSubordinates") == "TRUE" {
 			ebi.HasSubordinates = true
@@ -190,7 +190,7 @@ func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBaseIn
 /**
 Only return one layer entry by the domain you input
 */
-func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBaseInfo, error) {
+func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBase, error) {
 
 	conn, err := o.ldapConn()
 	if err != nil {
@@ -203,9 +203,9 @@ func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBaseInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	EBIArr := make([]model.EntryBaseInfo, 0)
+	EBIArr := make([]model.EntryBase, 0)
 	for _, entry := range res.Entries {
-		ebi := model.EntryBaseInfo{Kind: Unknown, DN: entry.DN}
+		ebi := model.EntryBase{Kind: Unknown, DN: entry.DN}
 
 		for _, v := range entry.GetAttributeValues("objectClass") {
 			if v == defaultKindOC[Group] {
@@ -235,7 +235,7 @@ func (o Option) ShowBaseInfoScopeOne(DN string) ([]model.EntryBaseInfo, error) {
 	return EBIArr, nil
 }
 
-func (o Option) AddEntry(dn string, attrs Attrs) error {
+func (o Option) AddEntry(dn string, attrs model.Attrs) error {
 	conn, err := o.ldapConn()
 	if err != nil {
 		return err
@@ -244,44 +244,6 @@ func (o Option) AddEntry(dn string, attrs Attrs) error {
 	nar := ldap.NewAddRequest(dn, nil)
 	for k, v := range attrs {
 		nar.Attribute(k, v)
-	}
-	return conn.Add(nar)
-}
-
-/*
-* Only support User Group Team
- */
-func (o Option) AddEntryBYKindDN(SuperDN string, EI model.EntryInfo) error {
-	conn, err := o.ldapConn()
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	nar := ldap.NewAddRequest("", nil)
-	if EI.Kind == Team {
-		nar.DN = fmt.Sprintf("ou=%s,%s", EI.TI.Name, SuperDN)
-		nar.Attribute("objectClass", defaultLdapOC[Team])
-		nar.Attribute("ou", []string{EI.TI.Name})
-		nar.Attribute("associatedDomain", []string{SuperDN})
-		nar.Attribute("description", []string{EI.TI.Description})
-	} else if EI.Kind == Group {
-		nar.DN = fmt.Sprintf("cn=%s,%s", EI.GI.Name, SuperDN)
-		nar.Attribute("objectClass", defaultLdapOC[Group])
-		nar.Attribute("cn", []string{EI.GI.Name})
-		nar.Attribute("gidNumber", []string{EI.GI.GidNumber})
-		nar.Attribute("description", []string{EI.GI.Description})
-	} else if EI.Kind == User {
-		nar.DN = fmt.Sprintf("uid=%s,%s", EI.UI.Name, SuperDN)
-		nar.Attribute("objectClass", defaultLdapOC[User])
-		nar.Attribute("cn", []string{EI.UI.Name})
-		nar.Attribute("uid", []string{EI.UI.Name})            // user username
-		nar.Attribute("uidNumber", []string{EI.UI.UidNumber}) //user uid
-		nar.Attribute("gidNumber", []string{EI.UI.GidNumber}) // This is primary group
-		nar.Attribute("homeDirectory", []string{EI.UI.HomeDirectory})
-		nar.Attribute("userPassword", []string{EI.UI.UserPassword})
-		nar.Attribute("loginShell", []string{EI.UI.LoginShell})
-	} else {
-		return fmt.Errorf("unknow kind: %d", EI.Kind)
 	}
 	return conn.Add(nar)
 }

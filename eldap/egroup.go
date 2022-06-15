@@ -38,7 +38,11 @@ func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
 		}
 		dn, _ = combineDN(Group, arr[0], g.Name[0])
 	}
-	return o.AddEntry(dn, Map(g))
+	attrs, err := Map(g)
+	if err != nil {
+		return err
+	}
+	return o.AddEntry(dn, attrs)
 
 }
 

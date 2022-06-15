@@ -22,14 +22,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var groupmodName string
 var groupmodGidNumber string
 var groupmodDesc string
 
-func groupmodRun() {
+func groupmodRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
 	if groupaddGidNumber != "" {
-		if err := o.GroupMod(groupmodName, groupmodGidNumber); err != nil {
+		if err := o.GroupMod(args[0], groupmodGidNumber); err != nil {
 			log.Fatalln(err)
 		}
 	}
@@ -38,19 +37,17 @@ func groupmodRun() {
 
 // groupmodCmd represents the groupmod command
 var groupmodCmd = &cobra.Command{
-	Use:   "groupmod",
+	Use:   "groupmod [flags] GROUP",
 	Short: "modify a group definition on the system",
 	Long:  `The groupmod command modifies the definition of the specified GROUP by modifying the appropriate entry in the group database.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		groupmodRun()
+		groupmodRun(cmd, args)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(groupmodCmd)
-	groupmodCmd.Flags().StringVarP(&groupmodName, "name", "n", "", "groupname")
 	groupmodCmd.Flags().StringVarP(&groupmodGidNumber, "gid", "g", "", "change the group ID to GID")
 	groupmodCmd.Flags().StringVarP(&groupmodDesc, "desc", "d", "", "Descroption Not support now")
-	groupmodCmd.MarkFlagRequired("name")
 
 }

@@ -32,7 +32,10 @@ func (o Option) TeamAdd(t model.TeamEntry) error {
 		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one from whole tree", len(arr))
 	}
 	t.AssociatedDomain = append(t.AssociatedDomain, o.LAI.TopDN)
-	attrs := Map(t)
+	attrs, err := Map(t)
+	if err != nil {
+		return err
+	}
 	dn, _ := combineDN(Team, o.LAI.TopDN, t.Name[0])
 	return o.AddEntry(dn, attrs)
 }
