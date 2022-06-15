@@ -280,10 +280,10 @@ func (o Option) DeleteEntry(DN string) error {
 }
 
 func NewOption() Option {
-	pwd, _ := secret.DecryptAES([]byte(viper.GetString("default.adminpw")), secret.KEY)
+	pwd := secret.EasyDecrypt(viper.GetString("default.adminpw"), secret.KEY)
 	if string(pwd) == "NO" {
 		pass, _ := gopass.GetPasswdPrompt("enter admin password: ", true, os.Stdin, os.Stdout)
-		pwd = pass
+		pwd = string(pass)
 	}
 
 	return Option{

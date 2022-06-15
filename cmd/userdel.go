@@ -22,8 +22,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var userdelName string
-
 func userdelRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
 	if err := o.UserDel(args[0]); err != nil {

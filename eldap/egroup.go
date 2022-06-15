@@ -90,8 +90,8 @@ func (o Option) GroupMod(groupName string, gidNumber string) error {
 	if len(arr) != 1 {
 		return fmt.Errorf("bad dn number %d", len(arr))
 	}
-	DN := arr[0]
-	return o.ModifyEntryAttr(DN, []model.AttrVal{
+	dn := arr[0]
+	return o.ModifyEntryAttr(dn, []model.AttrVal{
 		{AttrOP: Rep, Attr: "gidNumber", Val: []string{gidNumber}},
 	})
 }

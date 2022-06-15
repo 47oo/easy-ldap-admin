@@ -27,7 +27,7 @@ var groupmodDesc string
 
 func groupmodRun(cmd *cobra.Command, args []string) {
 	o := eldap.NewOption()
-	if groupaddGidNumber != "" {
+	if groupmodGidNumber != "" {
 		if err := o.GroupMod(args[0], groupmodGidNumber); err != nil {
 			log.Fatalln(err)
 		}
@@ -39,7 +39,7 @@ func groupmodRun(cmd *cobra.Command, args []string) {
 var groupmodCmd = &cobra.Command{
 	Use:   "groupmod [flags] GROUP",
 	Short: "modify a group definition on the system",
-	Long:  `The groupmod command modifies the definition of the specified GROUP by modifying the appropriate entry in the group database.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		groupmodRun(cmd, args)
 	},

@@ -19,9 +19,25 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/base64"
+	"fmt"
 )
 
 var KEY = []byte("easy-ldap-admin!")
+
+func EasyEncrypt(src []byte, key []byte) string {
+	sk := append(src, key...)
+	return base64.StdEncoding.EncodeToString(sk)
+}
+
+func EasyDecrypt(src string, key []byte) string {
+	sk, err := base64.StdEncoding.DecodeString(src)
+	if err != nil {
+		fmt.Println(err)
+	}
+	passwd := sk[:len(sk)-len(key)]
+	return string(passwd)
+}
 
 // padding data
 func padding(src []byte, blockSize int) []byte {
