@@ -1,4 +1,4 @@
-![easy-ldap-admin](https://socialify.git.ci/47oo/easy-ldap-admin/image?description=1&font=KoHo&language=1&name=1&pattern=Floating%20Cogs&theme=Light)
+# Easy LDAP Admin
 
 ## How to make
 
@@ -35,7 +35,7 @@ Available Commands:
   teammod     modify a team
   useradd     create a new user or update default new user information
   userdel     delete a user account and related files
-  usermod     modify user account
+  usermod   
 
 Flags:
       --config string   config file (default is $HOME/.ela.ini)
