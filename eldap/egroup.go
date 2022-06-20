@@ -34,7 +34,7 @@ func (o Option) GroupAdd(teamName string, g model.GroupEntry) error {
 			return err
 		}
 		if len(arr) != 1 {
-			return fmt.Errorf("[FAIL] %d num of this team", len(arr))
+			return ErrGroupAdd
 		}
 		dn, _ = combineDN(Group, arr[0], g.Name[0])
 	}
@@ -56,7 +56,7 @@ func (o Option) GroupDel(groupName string) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("bad dn number %d", len(arr))
+		return ErrGroupDel
 	}
 	return o.DeleteEntry(arr[0])
 }
@@ -88,7 +88,7 @@ func (o Option) GroupMod(groupName string, gidNumber string) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("bad dn number %d", len(arr))
+		return ErrGroupMod
 	}
 	dn := arr[0]
 	return o.ModifyEntryAttr(dn, []model.AttrVal{
