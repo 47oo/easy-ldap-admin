@@ -17,7 +17,6 @@ package eldap
 
 import (
 	"ela/model"
-	"fmt"
 )
 
 /*
@@ -29,7 +28,7 @@ func (o Option) TeamAdd(t model.TeamEntry) error {
 		return err
 	}
 	if len(arr) != 0 {
-		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one from whole tree", len(arr))
+		return ErrTeamAdd
 	}
 	t.AssociatedDomain = append(t.AssociatedDomain, o.LAI.TopDN)
 	attrs, err := Map(t)
@@ -49,7 +48,7 @@ func (o Option) TeamDescUpdate(t model.TeamEntry) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one", len(arr))
+		return ErrTeamMod
 	}
 	DN := arr[0]
 	return o.ModifyEntryAttr(DN, []model.AttrVal{
@@ -67,7 +66,7 @@ func (o Option) TeamDelete(teamName string) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("[FAIL] we find  num %d name team,this version only support one", len(arr))
+		return ErrTeamDel
 	}
 	dn := arr[0]
 	return o.DeleteEntry(dn)

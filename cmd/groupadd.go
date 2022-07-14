@@ -18,6 +18,7 @@ package cmd
 import (
 	"ela/eldap"
 	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -32,6 +33,14 @@ func groupaddRun(cmd *cobra.Command, args []string) {
 	g := eldap.NewGroupEntry()
 	g.Name = args
 	g.Description = append(g.Description, groupaddDesc)
+	if groupaddGidNumber == "" {
+		g, err := eldap.NewGidNumber(eldap.MinNumber, eldap.MaxNumber)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+		groupaddGidNumber = strconv.Itoa(g)
+	}
 	g.GidNumber = append(g.GidNumber, groupaddGidNumber)
 	if err := o.GroupAdd(groupaddTeamName, g); err != nil {
 		log.Fatalln(err)
@@ -54,6 +63,5 @@ func init() {
 	groupaddCmd.Flags().StringVarP(&groupaddGidNumber, "gid", "g", "", "use GID for the new group")
 	groupaddCmd.Flags().StringVarP(&groupaddDesc, "desc", "d", "", "Group Description")
 	groupaddCmd.Flags().StringVarP(&groupaddTeamName, "teamname", "t", "", "You want the group in which team, or default team")
-	groupaddCmd.MarkFlagRequired("gid")
 
 }

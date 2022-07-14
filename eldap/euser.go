@@ -17,7 +17,6 @@ package eldap
 
 import (
 	"ela/model"
-	"fmt"
 )
 
 /**
@@ -33,7 +32,7 @@ func (o Option) UserAdd(teamName string, u model.UserEntry) error {
 			return err
 		}
 		if len(arr) != 1 {
-			return fmt.Errorf("bad dn number %d", len(arr))
+			return ErrUserAdd
 		}
 		dn, _ = combineDN(User, arr[0], u.Name[0])
 	}
@@ -53,7 +52,7 @@ func (o Option) UserDel(userName string) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("bad dn number %d", len(arr))
+		return ErrUserDel
 	}
 	dn := arr[0]
 	return o.DeleteEntry(dn)
@@ -65,7 +64,7 @@ func (o Option) UserMod(u model.UserEntry) error {
 		return err
 	}
 	if len(arr) != 1 {
-		return fmt.Errorf("bad dn number %d", len(arr))
+		return ErrUserMod
 	}
 	dn := arr[0]
 	um, err := Map(u)

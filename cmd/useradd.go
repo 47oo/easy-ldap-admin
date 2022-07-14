@@ -19,6 +19,7 @@ import (
 	"ela/eldap"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -44,6 +45,30 @@ func useraddRun(cmd *cobra.Command, args []string) {
 	u := eldap.NewUserEntry()
 	u.CN = args
 	u.Name = args
+	if useraddUidNumber == "" {
+		un, err := eldap.NewUidNumber(eldap.MinNumber, eldap.MaxNumber)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+		useraddUidNumber = strconv.Itoa(un)
+	}
+	if useraddGidNumber == "" {
+		un, _ := strconv.Atoi(useraddUidNumber)
+		gn, err := eldap.NewPrivateGidNumber(eldap.MinNumber, eldap.MaxNumber, un)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		useraddGidNumber = strconv.Itoa(gn)
+		ge := eldap.NewGroupEntry()
+		ge.Name = args
+		ge.GidNumber = append(ge.GidNumber, useraddGidNumber)
+		if err := o.GroupAdd(useraddTeamName, ge); err != nil {
+			log.Fatalln(err)
+			return
+		}
+	}
+
 	u.GidNumber = append(u.GidNumber, useraddGidNumber)
 	u.UidNumber = append(u.UidNumber, useraddUidNumber)
 	u.HomeDirectory = append(u.HomeDirectory, useraddHomeDirectory)
@@ -52,7 +77,9 @@ func useraddRun(cmd *cobra.Command, args []string) {
 
 	if err := o.UserAdd(useraddTeamName, u); err != nil {
 		log.Fatalln(err)
+		return
 	}
+
 }
 
 // useraddCmd represents the useradd command
@@ -73,8 +100,4 @@ func init() {
 	useraddCmd.Flags().StringVarP(&useraddUserPassword, "password", "p", "", "encrypted password of the new account")
 	useraddCmd.Flags().StringVarP(&useraddLoginShell, "shell", "s", "", "login shell of the new account")
 	useraddCmd.Flags().StringVarP(&useraddTeamName, "team", "t", "", "teamname for this user")
-
-	useraddCmd.MarkFlagRequired("gid")
-	useraddCmd.MarkFlagRequired("uid")
-
 }
