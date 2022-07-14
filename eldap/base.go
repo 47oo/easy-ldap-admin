@@ -172,7 +172,6 @@ func (o Option) SearchAllEntryByKindDN(DN string, Kind int) ([]model.EntryBase, 
 	if err != nil {
 		return nil, err
 	}
-	res.Print()
 	EBIArr := make([]model.EntryBase, 0)
 	for _, entry := range res.Entries {
 		ebi := model.EntryBase{}
