@@ -3,7 +3,7 @@
 ## How to make
 
 ```shell
-git clone https://github.com/47oo/easy-ldap-admin.git
+git pull https://github.com/47oo/easy-ldap-admin.git
 cd easy-ldap-admin
 make build
 ```
