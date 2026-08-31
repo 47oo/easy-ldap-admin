@@ -3,10 +3,26 @@
 ## How to make
 
 ```shell
-git pull https://github.com/47oo/easy-ldap-admin.git
+git clone https://github.com/47oo/easy-ldap-admin.git
 cd easy-ldap-admin
-go build
+make build
 ```
+
+The binary is output to `bin/ela`.
+
+Other make targets:
+
+| Command          | Description                                            |
+|------------------|--------------------------------------------------------|
+| `make build`     | Build the binary into `./bin/`                         |
+| `make build-all` | Cross-compile linux/darwin/windows (amd64 + arm64)     |
+| `make test`      | Run all tests                                          |
+| `make vet`       | Run go vet                                             |
+| `make fmt`       | Format all Go code                                     |
+| `make clean`     | Remove build artifacts (`./bin/`)                      |
+| `make help`      | List available targets                                 |
+
+Requirements: Go 1.17+, GNU Make. `make build-all` also needs no extra tooling — it just sets `GOOS`/`GOARCH` per target.
 
 ## How to use
 
