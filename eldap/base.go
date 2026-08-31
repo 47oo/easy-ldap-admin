@@ -20,6 +20,8 @@ import (
 	"ela/secret"
 	"fmt"
 	"os"
+	"sync"
+	"time"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/howeyc/gopass"
@@ -57,8 +59,35 @@ var defaultLdapOC = [...][]string{
 }
 
 // Make Sure entry type is leaf or not
+type ldapConn struct {
+	conn         *ldap.Conn
+	lastActive   time.Time
+	isHealthy    bool
+}
+
+func (lc *ldapConn) checkHealth() bool {
+	// 健康检查：发送WhoAmI扩展操作验证连接状态
+	_, err := lc.conn.WhoAmI(nil)
+	if err != nil {
+		lc.isHealthy = false
+		return false
+	}
+	lc.isHealthy = true
+	return true
+}
+
+func (lc *ldapConn) Close() {
+	if lc.conn != nil {
+		lc.conn.Close()
+	}
+	lc.isHealthy = false
+}
+
 type Option struct {
-	LAI model.LDAPAuthInfo
+	LAI      model.LDAPAuthInfo
+	pool     []*ldapConn
+	poolSize int
+	mutex    sync.Mutex
 }
 
 /**
